@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: postgres-apprisal
+    ports:
+      - "5028:5432"
+    environment:
+      POSTGRES_DB: hr_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin123
+    volumes:
+      - apprisal-data:/var/lib/postgresql/data
+
+  backend:
+    build: ./Backend
+    container_name: Backend-apprisal
+    ports:
+      - "3061:3061"
+    depends_on:
+      - postgres
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: hr_db
+      DB_USER: postgres
+      DB_PASS: admin123
+
+  frontend:
+    build: ./Frontend
+    container_name: Frontend-apprisal
+    ports:
+      - "8085:80"
+    depends_on:
+      - backend
+
+  hr:
+    build: ./HR
+    container_name: HR-apprisal
+    ports:
+      - "8086:80"
+    depends_on:
+      - backend
+
+volumes:
+  apprisal-data:
+
